@@ -25,7 +25,7 @@ FROM ${BUILDER_IMAGE} AS builder
 ARG PUBLIC_URL=/__HELX_PUBLIC_URL__/
 RUN .helx/prepare-dist.sh platform/app/dist "${PUBLIC_URL}"
 
-FROM nginxinc/nginx-unprivileged:1.27-alpine AS final
+FROM nginxinc/nginx-unprivileged:1.31-alpine AS final
 
 ARG HELX_PORT=8080
 ENV HELX_PORT=${HELX_PORT}
@@ -37,6 +37,9 @@ ARG PUBLIC_URL=/__HELX_PUBLIC_URL__/
 ENV HELX_PUBLIC_URL_SENTINEL=${PUBLIC_URL}
 
 USER root
+
+# Pickup Alpine security fixes without waiting for a new base image.
+RUN apk upgrade --no-cache
 
 RUN rm -f /etc/nginx/conf.d/default.conf
 
